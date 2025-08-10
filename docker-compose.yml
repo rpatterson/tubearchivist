@@ -4,15 +4,17 @@ services:
     restart: "unless-stopped"
     image: "bbilly1/tubearchivist"
     ports:
-      - "8000:8000"
+      # Where you see `${...:-...}`, you can override the values in the `./.env` file in
+      # your Docker Compose project:
+      - "${LAN_IP:-0.0.0.0}:8000:8000"
     volumes:
       - "tubearchivist-media:/youtube"
       - "tubearchivist-cache:/cache"
     environment:
       ES_URL: "http://archivist-es:9200"
       REDIS_CON: "redis://archivist-redis:6379"
-      HOST_UID: "1000"
-      HOST_GID: "1000"
+      HOST_UID: "${PUID:-1000}"
+      HOST_GID: "${PGID:-1000}"
       # Set your host name with protocol and port:
       TA_HOST: "http://tubearchivist.local:8000"
       # Your initial TA credentials:
@@ -22,7 +24,7 @@ services:
       # Set password for Elasticsearch:
       ELASTIC_PASSWORD: "verysecret"
       # Set your time zone:
-      TZ: "America/New_York"
+      TZ: "${TZ:-America/New_York}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: "2m"
