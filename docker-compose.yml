@@ -6,8 +6,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - "media:/youtube"
-      - "cache:/cache"
+      - "tubearchivist-media:/youtube"
+      - "tubearchivist-cache:/cache"
     environment:
       ES_URL: "http://archivist-es:9200"
       REDIS_CON: "redis://archivist-redis:6379"
@@ -32,6 +32,9 @@ services:
     depends_on:
       - "archivist-es"
       - "archivist-redis"
+  # TODO: Can Tube Archivist use Redis and Elastic Search services shared with other
+  # services in the same Docker Compose project? If not, can they be made to be?  If
+  # they can, then the service, volume, and other names should be generalized:
   archivist-redis:
     image: "redis"
     container_name: "archivist-redis"
@@ -39,7 +42,7 @@ services:
     expose:
       - "6379"
     volumes:
-      - "redis:/data"
+      - "tubearchivist-redis:/data"
     depends_on:
       - "archivist-es"
   archivist-es:
@@ -60,12 +63,12 @@ services:
         hard: -1
     volumes:
       # Check for permission error when using bind mount, see readme:
-      - "es:/usr/share/elasticsearch/data"
+      - "tubearchivist-es:/usr/share/elasticsearch/data"
     expose:
       - "9200"
 
 volumes:
-  media:
-  cache:
-  redis:
-  es:
+  tubearchivist-media:
+  tubearchivist-cache:
+  tubearchivist-redis:
+  tubearchivist-es:
